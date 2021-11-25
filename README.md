@@ -1,5 +1,5 @@
-# discordbot
-The discord bot will have 4 key features.
+# Hermes (discord bot name)
+Hermes will have 4 key features.
 
 1) To send discord messages as emails
 2) To receive emails which it then sends as a discord message
