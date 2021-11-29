@@ -2,19 +2,29 @@ import discord
 import smtplib
 from email.message import EmailMessage
 from email.headerregistry import Address
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 
 def writeEmail(emailContents):
-    msg = EmailMessage()
+    sender = 'EMAIL'
+    pwd = 'PASSWORD'
+    subject = "Discord"
 
-    msg['Subject'] = "Discord Messages"
-    msg.set_content(emailContents) 
-    print(emailContents)
-    msg['From'] = Address(addr_spec="amy.collins49@mail.dcu.ie")
-    msg['To'] = Address(addr_spec="amy.collins49@mail.dcu.ie")
+    msg = MIMEMultipart()
+    msg['Subject'] = subject
+    msg['From'] = sender
+    msg['To'] = 'EMAIL'
+    msg.attach(MIMEText(emailContents,'plain'))
 
-    s = smtplib.SMTP('localhost')
-    s.send_message(msg)
-    s.quit()
+    try:
+        server = smtplib.SMTP("DOMAIN NAME", PORT)
+        server.ehlo()
+        server.starttls()
+        server.login(sender, pwd)
+        server.sendmail(sender, 'EMAIL', msg.as_string())
+        server.close()
+        print("successfully sent the mail")
+    except: print("failed to send mail")
 
 client = discord.Client()
 
@@ -34,4 +44,4 @@ async def on_message(message):
         writeEmail(message.content[7:])
         await message.channel.send(message.content[7:])
 
-client.run("--TOKEN CODE--")
+client.run("TOKEN")
