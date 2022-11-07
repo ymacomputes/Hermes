@@ -5,28 +5,32 @@ from email.headerregistry import Address
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
-def writeEmail(emailContents):
-    sender = 'EMAIL'
+def writeEmail(messageAuthor, emailContents):
+    sender = 'SENDER EMAIL'
     pwd = 'PASSWORD'
     subject = "Discord"
 
     msg = MIMEMultipart()
     msg['Subject'] = subject
     msg['From'] = sender
-    msg['To'] = 'EMAIL'
-    msg.attach(MIMEText(emailContents,'plain'))
+    msg['To'] = 'SENDEE EMAIL'
+    msg.attach(MIMEText(f"{messageAuthor}-> {emailContents}",'plain'))
 
-    try:
-        server = smtplib.SMTP("DOMAIN NAME", PORT)
-        server.ehlo()
-        server.starttls()
-        server.login(sender, pwd)
-        server.sendmail(sender, 'EMAIL', msg.as_string())
-        server.close()
-        print("successfully sent the mail")
-    except: print("failed to send mail")
+    # try:
+    server = smtplib.SMTP("DOMAIN", PORT)
+    server.ehlo()
+    server.starttls()
+    server.login(sender, pwd)
+    server.sendmail(sender, 'SENDEE EMAIL', msg.as_string())
+    server.close()
+    print("successfully sent the mail")
+    # except Exception as e:
+    #     print(e)
+    #     print("failed to send mail")
 
-client = discord.Client()
+intents = discord.Intents.default()
+intents.message_content = True
+client = discord.Client(intents=intents)
 
 @client.event
 async def on_ready():
@@ -36,12 +40,12 @@ async def on_ready():
 async def on_message(message):
     if message.author == client.user:
         return
-    print("hello")
+
     if message.content.startswith('hello'):
         await message.channel.send('Hello!')
     
     if message.content[:7] == "!email ":
-        writeEmail(message.content[7:])
+        writeEmail(message.author.display_name, message.content[7:])
         await message.channel.send(message.content[7:])
 
 client.run("TOKEN")
